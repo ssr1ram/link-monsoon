@@ -1,0 +1,26 @@
+{
+  "name": "link-monsoon",
+  "version": "1.0.0",
+  "description": "Manage hunderds of Link groups each holding multiple Link sets each holding many links. Supports Netscape file format so one can easily import and export links",
+  "main": "background.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ssr1ram/link-monsoon.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ssr1ram/link-monsoon/issues"
+  },
+  "homepage": "https://github.com/ssr1ram/link-monsoon#readme",
+  "dependencies": {
+    "glob": "^11.0.1"
+  }
+}
