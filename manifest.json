@@ -1,0 +1,17 @@
+{
+    "manifest_version": 3,
+    "name": "Link Monsoon",
+    "version": "1.2",
+    "description": "A Chrome extension to manage and display multiple link sets in groups.",
+    "permissions": [
+      "storage",
+      "activeTab"
+    ],
+    "options_page": "options.html",
+    "chrome_url_overrides": {
+        "newtab": "./popup.html"
+      },
+    "background": {
+      "service_worker": "background.js"
+    }
+  }
