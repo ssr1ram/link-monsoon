@@ -16,8 +16,8 @@ export function init() {
     const linkGroupsSelect = document.getElementById('link-groups');
     const linkSetsSelect = document.getElementById('link-sets');
     const addLinkSetButton = document.getElementById('add-link-set');
-    const addGroupButton = document.getElementById('add-group');
-    const groupNameInput = document.getElementById('group-name');
+    // const addGroupButton = document.getElementById('add-group');
+    // const groupNameInput = document.getElementById('group-name');
 
     // Load data
     chrome.storage.local.get(['linkGroupsIndex'], (result) => {
@@ -53,17 +53,17 @@ export function init() {
         });
 
         // Handle adding a new group
-        addGroupButton.addEventListener('click', () => {
-            const groupName = groupNameInput.value.trim();
-            if (groupName) {
-                addNewGroup(groupName);
-                groupNameInput.value = '';
-            } else {
-                status.textContent = 'Please enter a group name.';
-                status.style.color = 'red';
-                setTimeout(() => { status.textContent = '   '; }, 2000);
-            }
-        });
+        // addGroupButton.addEventListener('click', () => {
+        //     const groupName = groupNameInput.value.trim();
+        //     if (groupName) {
+        //         addNewGroup(groupName);
+        //         groupNameInput.value = '';
+        //     } else {
+        //         status.textContent = 'Please enter a group name.';
+        //         status.style.color = 'red';
+        //         setTimeout(() => { status.textContent = '   '; }, 2000);
+        //     }
+        // });
     });
 
     function populateLinkGroups(linkGroups) {

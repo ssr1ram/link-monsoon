@@ -71,7 +71,6 @@ document.addEventListener('DOMContentLoaded', () => {
     updateSets(groupId, ''); // Clear set selection initially, will be repopulated
     if (groupId) {
       chrome.storage.local.set({ lastVisited: { groupId, setId: '' } }, () => {
-        console.log('Last visited group updated:', { groupId, setId: '' });
       });
     }
   });
@@ -82,7 +81,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (groupId && setId) {
       loadAndRenderLinkSet(groupId, setId);
       chrome.storage.local.set({ lastVisited: { groupId, setId } }, () => {
-        console.log('Last visited updated:', { groupId, setId });
       });
     }
   });
@@ -99,7 +97,6 @@ function loadAndRenderLinkSet(groupId, setId) {
       renderMasonryGrid(linkSet.data, linkSet.options);
       // Update lastVisited after rendering (ensures valid load)
       chrome.storage.local.set({ lastVisited: { groupId, setId } }, () => {
-        console.log('Last visited updated after render:', { groupId, setId });
       });
     }
   });

@@ -19,7 +19,6 @@ document.addEventListener('DOMContentLoaded', () => {
             sectionsContainer.innerHTML += html;
 
             const section = document.getElementById(config.sectionId);
-            console.log(`Loaded ${config.label}: Section found = ${!!section}`);
 
             loadedOptions.push({
                 menuItem,
@@ -40,7 +39,6 @@ document.addEventListener('DOMContentLoaded', () => {
     window.submenuOptions.forEach(loadSubmenuOption);
 
     function updateActiveSection(activeMenu, sectionId, titleText, initFunc) {
-        console.log(`Switching to ${titleText}`);
         loadedOptions.forEach(opt => {
             opt.menuItem.classList.remove('active-menu');
         });
@@ -54,7 +52,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (showSection) {
             showSection.classList.add('active');
             if (!initFunc.initialized) {
-                console.log(`Running init for ${titleText}`);
                 initFunc.init();
                 initFunc.initialized = true;
             }
@@ -68,7 +65,6 @@ document.addEventListener('DOMContentLoaded', () => {
     loadedOptions.forEach((opt, index) => {
         opt.menuItem.addEventListener('click', (e) => {
             e.preventDefault();
-            console.log(`Clicked ${opt.label}`);
             updateActiveSection(opt.menuItem, opt.sectionId, opt.label, opt);
         });
 

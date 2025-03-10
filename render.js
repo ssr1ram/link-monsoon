@@ -37,15 +37,11 @@ function parseBookmarkData(htmlString) {
     const doc = parser.parseFromString(htmlString, 'text/html');
     const sections = [];
 
-    // Debug: Log the parsed document to check structure
-    console.log('Parsed DOM in parseBookmarkData:', doc);
-
     // Recursive function to parse bookmark sections
     function parseSections(element) {
         const children = element.children;
         for (let i = 0; i < children.length; i++) {
             const child = children[i];
-            console.log('Processing child:', child.tagName); // Debug log
             if (child.tagName === 'DT' || child.tagName === 'DL') {
                 // Process <DT> for potential <H3> and <DL> pairs
                 if (child.tagName === 'DT') {
@@ -72,7 +68,6 @@ function parseBookmarkData(htmlString) {
                                         text: a.textContent.trim(),
                                         href: a.getAttribute('HREF')
                                     });
-                                    console.log(`Collected link: ${a.textContent.trim()} (${a.getAttribute('HREF')})`);
                                 }
                             });
                         };
@@ -80,7 +75,6 @@ function parseBookmarkData(htmlString) {
 
                         if (links.length > 0) {
                             sections.push({ title: h3.textContent.trim(), links, weight: links.length });
-                            console.log(`Found section: ${h3.textContent.trim()} with ${links.length} links`, links);
                         }
                     }
                 }
@@ -98,8 +92,6 @@ function parseBookmarkData(htmlString) {
         console.warn('No <body> found in the document');
     }
 
-    // Debug: Log final sections
-    console.log('Final sections in parseBookmarkData:', sections);
     return sections;
 }
 
