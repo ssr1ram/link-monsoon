@@ -1,0 +1,44 @@
+<!-- file: section.html -->
+<div id="browser-bookmarks-section" class="section-content">
+    <div class="section-container w-full max-w-none">
+        <div class="grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-6">
+            <!-- Left Column -->
+            <div class="left-column min-w-0">
+                <div class="mb-6">
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <button id="fetch-bookmarks" class="w-full sm:w-auto px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 flex items-center gap-2 text-sm">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                            </svg>
+                            <span>Fetch Bookmarks</span>
+                        </button>
+                    </div>
+                    <div id="status" class="mt-2 text-sm"></div>
+                </div>
+                <div id="bookmarks-display" class="bg-white p-6 rounded-lg shadow-sm min-h-[200px] mt-6">
+                    <h2 class="text-base font-semibold mb-4 text-gray-900">Bookmarks</h2>
+                    <div id="bookmarks-actions" class="flex gap-2 mb-4 hidden">
+                        <button id="export-link-group" class="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm">
+                            Export as Link Group
+                        </button>
+                        <button id="export-link-set" class="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm">
+                            Export as Link Set
+                        </button>
+                    </div>
+                    <div id="bookmarks-list" class="text-sm text-gray-600"></div>
+                </div>
+            </div>
+            
+            <!-- Right Column -->
+            <div class="right-column min-w-0">
+                <div class="bg-white p-6 rounded-lg shadow-sm min-h-[200px]">
+                    <h2 class="text-base font-semibold mb-4 text-gray-900">Help</h2>
+                    <div class="text-sm text-gray-600">
+                        <p>Help content placeholder for browser bookmarks.</p>
+                        <p>Here you can add documentation, tips, or guidance for managing bookmarks.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

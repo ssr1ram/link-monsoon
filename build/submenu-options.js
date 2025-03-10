@@ -56,8 +56,8 @@ window.submenuOptions = [
     const linkGroupsSelect = document.getElementById('link-groups');
     const linkSetsSelect = document.getElementById('link-sets');
     const addLinkSetButton = document.getElementById('add-link-set');
-    const addGroupButton = document.getElementById('add-group');
-    const groupNameInput = document.getElementById('group-name');
+    // const addGroupButton = document.getElementById('add-group');
+    // const groupNameInput = document.getElementById('group-name');
 
     // Load data
     chrome.storage.local.get(['linkGroupsIndex'], (result) => {
@@ -93,17 +93,17 @@ window.submenuOptions = [
         });
 
         // Handle adding a new group
-        addGroupButton.addEventListener('click', () => {
-            const groupName = groupNameInput.value.trim();
-            if (groupName) {
-                addNewGroup(groupName);
-                groupNameInput.value = '';
-            } else {
-                status.textContent = 'Please enter a group name.';
-                status.style.color = 'red';
-                setTimeout(() => { status.textContent = '   '; }, 2000);
-            }
-        });
+        // addGroupButton.addEventListener('click', () => {
+        //     const groupName = groupNameInput.value.trim();
+        //     if (groupName) {
+        //         addNewGroup(groupName);
+        //         groupNameInput.value = '';
+        //     } else {
+        //         status.textContent = 'Please enter a group name.';
+        //         status.style.color = 'red';
+        //         setTimeout(() => { status.textContent = '   '; }, 2000);
+        //     }
+        // });
     });
 
     function populateLinkGroups(linkGroups) {
@@ -429,6 +429,230 @@ window.submenuOptions = [
             status.textContent = 'Dummy settings saved.';
             status.style.color = 'blue';
             setTimeout(() => { status.textContent = '   '; }, 2000);
+        });
+    });
+}
+  },
+  {
+    config: {
+    id: 'browser-bookmarks',
+    label: 'Browser Bookmarks',
+    menuId: 'browser-bookmarks-menu',
+    sectionId: 'browser-bookmarks-section'
+},
+    html: `<!-- file: section.html -->
+<div id="browser-bookmarks-section" class="section-content">
+    <div class="section-container w-full max-w-none">
+        <div class="grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-6">
+            <!-- Left Column -->
+            <div class="left-column min-w-0">
+                <div class="mb-6">
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <button id="fetch-bookmarks" class="w-full sm:w-auto px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 flex items-center gap-2 text-sm">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                            </svg>
+                            <span>Fetch Bookmarks</span>
+                        </button>
+                    </div>
+                    <div id="status" class="mt-2 text-sm"></div>
+                </div>
+                <div id="bookmarks-display" class="bg-white p-6 rounded-lg shadow-sm min-h-[200px] mt-6">
+                    <h2 class="text-base font-semibold mb-4 text-gray-900">Bookmarks</h2>
+                    <div id="bookmarks-actions" class="flex gap-2 mb-4 hidden">
+                        <button id="export-link-group" class="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm">
+                            Export as Link Group
+                        </button>
+                        <button id="export-link-set" class="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm">
+                            Export as Link Set
+                        </button>
+                    </div>
+                    <div id="bookmarks-list" class="text-sm text-gray-600"></div>
+                </div>
+            </div>
+            
+            <!-- Right Column -->
+            <div class="right-column min-w-0">
+                <div class="bg-white p-6 rounded-lg shadow-sm min-h-[200px]">
+                    <h2 class="text-base font-semibold mb-4 text-gray-900">Help</h2>
+                    <div class="text-sm text-gray-600">
+                        <p>Help content placeholder for browser bookmarks.</p>
+                        <p>Here you can add documentation, tips, or guidance for managing bookmarks.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>`,
+    init: function init() {
+    const fetchBookmarksButton = document.getElementById('fetch-bookmarks');
+    const status = document.getElementById('status');
+    const bookmarksList = document.getElementById('bookmarks-list');
+    const bookmarksActions = document.getElementById('bookmarks-actions');
+    const exportLinkGroupButton = document.getElementById('export-link-group');
+    const exportLinkSetButton = document.getElementById('export-link-set');
+    let selectedFolders = new Set();
+    let collapsedFolders = new Set(); // Track collapsed folders
+
+    // Function to initialize collapsed state for all folders
+    function initializeCollapsedState(bookmark) {
+        if (bookmark.children) {
+            collapsedFolders.add(bookmark.id);
+            bookmark.children.forEach(child => initializeCollapsedState(child));
+        }
+    }
+
+    // Function to create bookmark item HTML
+    function createBookmarkItem(bookmark, indent = 0, isRoot = false) {
+        if (!bookmark.url && !bookmark.children) return '';
+
+        let html = '';
+        
+        // If it's a folder
+        if (bookmark.children) {
+            const folderId = bookmark.id;
+            const isCollapsed = collapsedFolders.has(folderId);
+            
+            html += `
+                <div class="bookmark-folder ml-${indent * 4} mb-2" data-folder-id="${folderId}">
+                    <div class="flex items-center gap-2">
+                        <button class="toggle-folder" data-folder-id="${folderId}">
+                            <svg class="w-4 h-4 transform ${isCollapsed ? '' : 'rotate-90'}" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </button>
+                        <input type="checkbox" 
+                               class="folder-checkbox" 
+                               data-folder-id="${folderId}"
+                               id="folder-${folderId}">
+                        <label for="folder-${folderId}" class="flex items-center gap-2 cursor-pointer">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
+                            </svg>
+                            <span class="font-medium text-gray-800">${bookmark.title || 'Unnamed Folder'}</span>
+                        </label>
+                    </div>
+                    <div class="folder-contents ${isCollapsed ? 'hidden' : ''}" data-folder-id="${folderId}">
+            `;
+            
+            // Add children (will be hidden if collapsed)
+            bookmark.children.forEach(child => {
+                html += createBookmarkItem(child, indent + 1);
+            });
+            
+            html += '</div></div>';
+        }
+        // If it's a bookmark with URL
+        else if (bookmark.url) {
+            html += `
+                <div class="bookmark-item ml-${indent * 4} mb-2">
+                    <a href="${bookmark.url}" target="_blank" 
+                       class="text-blue-600 hover:underline flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.473-1.473M10.172 13.828a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.473 1.473"></path>
+                        </svg>
+                        ${bookmark.title || 'Untitled Bookmark'}
+                    </a>
+                </div>
+            `;
+        }
+        return html;
+    }
+
+    // Function to update action bar visibility
+    function updateActionBar() {
+        if (selectedFolders.size > 0) {
+            bookmarksActions.classList.remove('hidden');
+        } else {
+            bookmarksActions.classList.add('hidden');
+        }
+    }
+
+    // Handle folder selection
+    function handleFolderSelection(event) {
+        const checkbox = event.target;
+        const folderId = checkbox.dataset.folderId;
+        
+        if (checkbox.checked) {
+            selectedFolders.add(folderId);
+        } else {
+            selectedFolders.delete(folderId);
+        }
+        updateActionBar();
+    }
+
+    // Handle folder toggle
+    function handleFolderToggle(event) {
+        const button = event.currentTarget;
+        const folderId = button.dataset.folderId;
+        const contents = document.querySelector(`.folder-contents[data-folder-id="${folderId}"]`);
+        const icon = button.querySelector('svg');
+
+        if (collapsedFolders.has(folderId)) {
+            collapsedFolders.delete(folderId);
+            contents.classList.remove('hidden');
+            icon.classList.add('rotate-90');
+        } else {
+            collapsedFolders.add(folderId);
+            contents.classList.add('hidden');
+            icon.classList.remove('rotate-90');
+        }
+    }
+
+    // Handle export actions (placeholder functions)
+    exportLinkGroupButton.addEventListener('click', () => {
+        alert(`Exporting ${selectedFolders.size} folder(s) as Link Group`);
+        // Implement export logic here
+    });
+
+    exportLinkSetButton.addEventListener('click', () => {
+        alert(`Exporting ${selectedFolders.size} folder(s) as Link Set`);
+        // Implement export logic here
+    });
+
+    fetchBookmarksButton.addEventListener('click', () => {
+        status.textContent = 'Fetching bookmarks...';
+        status.style.color = 'blue';
+        bookmarksList.innerHTML = ''; // Clear previous bookmarks
+        selectedFolders.clear();
+        collapsedFolders.clear(); // Reset collapsed state
+        updateActionBar();
+
+        chrome.bookmarks.getTree((bookmarkTreeNodes) => {
+            if (chrome.runtime.lastError) {
+                status.textContent = 'Error fetching bookmarks';
+                status.style.color = 'red';
+                setTimeout(() => { status.textContent = ''; }, 2000);
+                return;
+            }
+
+            status.textContent = 'Bookmarks fetched successfully';
+            status.style.color = 'green';
+            setTimeout(() => { status.textContent = ''; }, 2000);
+
+            // Initialize all folders as collapsed
+            bookmarkTreeNodes.forEach(node => {
+                initializeCollapsedState(node);
+            });
+
+            // Process and display bookmarks
+            let bookmarksHTML = '';
+            bookmarkTreeNodes.forEach(node => {
+                bookmarksHTML += createBookmarkItem(node, 0, true);
+            });
+            bookmarksList.innerHTML = bookmarksHTML;
+
+            // Add event listeners to checkboxes
+            const checkboxes = document.querySelectorAll('.folder-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', handleFolderSelection);
+            });
+
+            // Add event listeners to toggle buttons
+            const toggleButtons = document.querySelectorAll('.toggle-folder');
+            toggleButtons.forEach(button => {
+                button.addEventListener('click', handleFolderToggle);
+            });
         });
     });
 }

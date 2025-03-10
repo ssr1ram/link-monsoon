@@ -48,4 +48,4 @@ fs.writeFileSync('build/submenu-options.js', output);
 console.log('Submenu options bundled successfully.');
 
 // Optional: Log the output for debugging
-console.log('Generated content:\n', output);
+// console.log('Generated content:\n', output);
